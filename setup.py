@@ -20,7 +20,7 @@ setup(
     py_modules=['flask-naver'],
     # if you would be using a package instead use packages instead
     # of py_modules:
-    # packages=['flask_sqlite3'],
+    # packages=['naver_login'],
     zip_safe=False,
     include_package_data=True,
     platforms='any',
