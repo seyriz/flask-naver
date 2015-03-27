@@ -8,30 +8,35 @@ from naver_login import flask_naver
 app = Flask(__name__)
 app.config['CLIENT_ID'] = ""
 app.config['CLIENT_SECRET'] = ""
-app.config['CALLBACK'] = "callback"
+app.config['SECRET_KEY'] = ""
+app.config['CALLBACK'] = ''
+naver = flask_naver(app)
 
 
-@app.route('/index')
+@app.route('/')
 def index():
     if(session.get('isLogged')):
+        print(session)
         ent = {'userInfo': loads(session.get('userInfo')), 'hashed': loads(session.get('hashed')),
                'state': session.get('state'), 'auth_token': session.get('auth_token'),
                'refresh_token': session.get('refresh_token'), 'token_type': session.get('token_type')}
         return render_template('userInfo.html', entity = ent)
     else:
-        flask_naver.login()
+        return naver.login()
 
 
-@app.config('/callback')
+@app.route('/callback')
 def callback():
     if(request.args is not None):
-        auth = flask_naver.getAuth(request.args)
+        auth = naver.getAuth(request.args)
         if(type(auth) == dict):
+            print(auth)
             session['auth_token'] = auth.get('access_token')
             session['refresh_token'] = auth.get('refresh_token')
             session['token_type'] = auth.get('token_type')
-            session['userInfo'] = flask_naver.getUserInfo(session.get('token_type'), session.get('auth_token'))
-            session['hashed'] = flask_naver.getUserUnique(session.get('token_type'), session.get('auth_token'))
+            session['userInfo'] = dumps(naver.getUserInfo(session.get('token_type'), session.get('auth_token')))
+            session['hashed'] = dumps(naver.getUserUnique(session.get('token_type'), session.get('auth_token')))
+            session['isLogged'] = True
             return redirect(url_for('index'))
         else:
             return auth

@@ -6,7 +6,7 @@ Flask-Naver
 Oauth2 wraper for Naver login
 """
 
-from pip import setup
+from setuptools import setup
 
 setup(
     name='Flask-naver',
