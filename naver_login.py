@@ -6,9 +6,9 @@ try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
+from urllib2 import urlopen
 
 from flask import session, redirect
-from httplib2 import Http
 from encoder import XML2Dict
 
 class flask_naver(object):
@@ -22,7 +22,7 @@ class flask_naver(object):
     def init_app(self, app):
         self.CLIENT_ID = app.config.get('CLIENT_ID')
         self.CLIENT_SECRET = app.config.get('CLIENT_SECRET')
-        self.CALLBACK = app.config.get('CALLBACK')
+        self.CALLBACK = app.config.get('CALLBACK').split('/')[1]
         if(self.CLIENT_ID == None or self.CLIENT_SECRET == None or self.CALLBACK == None):
             raise KeyError
 
@@ -37,7 +37,7 @@ class flask_naver(object):
         urlen = urlencode(param)
         print(urlen)
         uri = "https://nid.naver.com/oauth2.0/authorize?"
-        return uri + urlen
+        return redirect(uri + urlen)
 
 
     def getAuth(self, args):
@@ -55,13 +55,15 @@ class flask_naver(object):
             params = {'client_id': self.CLIENT_ID, 'client_secret': self.CLIENT_SECRET, 'grant_type': 'authorization_code',
                       'state': state, 'code': auth}
             urlen = urlencode(params)
-            http = Http()
-            resp, content = http.request(uri + urlen)
-            print(resp)
-            print(content)
-            return loads(content)
+            req = urlopen(uri + urlen)
+            print(req.headers)
+            print(req.code)
+            return loads(req.read())
         else:
-            return error_description is not None if error_description else 'CSRF error'
+            if(error_description is not None):
+                return error_description
+            else:
+                raise 'CSRF error'
 
 
     def refreshAuth(self, refresh_token = ""):
@@ -74,32 +76,30 @@ class flask_naver(object):
         uri = "https://nid.naver.com/oauth2.0/token?"
         params = {'grant_type': 'refresh_token', 'client_id': self.CLIENT_ID, 'client_secret': self.CLIENT_SECRET,
                   'refresh_token': refresh_token}
-        http = Http()
         urlen = urlencode(params)
         print(urlen)
-        resp, content = http.request(uri + urlen)
-        print(resp)
-        print(content)
-        return loads(content)
+        req = urlopen(uri+urlen)
+        print(req.headers)
+        print(req.code)
+        return loads(req.read())
 
 
-    def gerUserInfo(self, token_type="", access_token=''):
+    def getUserInfo(self, token_type="", access_token=''):
         """
         Get user personal information(email, user_unique_key, nickname, etc...)
         :param token_type: token_type given by getAuth or refreshAuth.
         :param access_token: access_token given by getAuth or refreshAuth.
         :return: User's personal information
         """
-        http = Http()
         uri = "https://apis.naver.com/nidlogin/nid/getUserProfile.xml"
         header = {'Authorization': token_type + " " + access_token}
-        resp, content = http.request(uri=uri, method="POST", headers=header)
-        print(resp)
-        print(content)
+        req = urlopen(url=uri, data=header)
+        print(req.headers)
+        print(req.code)
         parser = XML2Dict()
-        cont = parser.parse(content)
+        cont = parser.parse(req.read())
         print(cont)
-        return dumps(cont)
+        return cont
 
 
     def getUserUnique(self, token_type="", access_token=''):
@@ -109,13 +109,12 @@ class flask_naver(object):
         :param access_token: access_token given by getAuth or refreshAuth.
         :return: user_unique_key and result code in Dict
         """
-        http = Http()
         uri = "https://apis.naver.com/nidlogin/nid/getHashId_v2.xml?mode=userinfo"
         header = {'Authorization': token_type + " " + access_token}
-        resp, content = http.request(uri=uri, headers=header)
-        print(resp)
-        print(content)
+        req = urlopen(url=uri, data=header)
+        print(req.headers)
+        print(req.code)
         parser = XML2Dict()
-        cont = parser.parse(content)
+        cont = parser.parse(req.read())
         print(cont)
-        return dumps(cont)
+        return cont

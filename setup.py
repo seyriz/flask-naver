@@ -27,7 +27,6 @@ setup(
     install_requires=[
         "flask",
         "xml2dict",
-        'httplib2',
     ],
     classifiers=[
         'Environment :: Web Environment',
