@@ -6,7 +6,10 @@ try:
     from urllib import urlencode
 except ImportError:
     from urllib.parse import urlencode
-from urllib2 import urlopen
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from urllib.request import urlopen
 
 from flask import session, redirect
 from encoder import XML2Dict
