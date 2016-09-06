@@ -13,9 +13,9 @@ setup(
     version='1.0',
     url='http://github.com/seyriz/flask-naver',
     license='BSD',
-    author='Han-Wool, Lee',
+    author='HanWool Lee',
     author_email='kudnya@gmail.com',
-    description='Oauth2 wraper for Naver login',
+    description='Oauth2 wrapper for Naver login',
     long_description=__doc__,
     py_modules=['flask-naver'],
     # if you would be using a package instead use packages instead

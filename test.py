@@ -6,17 +6,16 @@ from flask import *
 from naver_login import flask_naver
 
 app = Flask(__name__)
-app.config['CLIENT_ID'] = ""
-app.config['CLIENT_SECRET'] = ""
-app.config['SECRET_KEY'] = ""
-app.config['CALLBACK'] = ''
+app.config['CLIENT_ID'] = "t4zhYRQ2RoZwVXAXzL5V"
+app.config['CLIENT_SECRET'] = "iqANBHZRnq"
+app.config['CALLBACK'] = '/callback'
+app.config['SECRET_KEY'] = 'THIS_IS_NOT_SECRET_KEY'
 naver = flask_naver(app)
 
 
 @app.route('/')
 def index():
     if(session.get('isLogged')):
-        print(session)
         ent = {'userInfo': loads(session.get('userInfo')), 'hashed': loads(session.get('hashed')),
                'state': session.get('state'), 'auth_token': session.get('auth_token'),
                'refresh_token': session.get('refresh_token'), 'token_type': session.get('token_type')}
@@ -30,7 +29,6 @@ def callback():
     if(request.args is not None):
         auth = naver.getAuth(request.args)
         if(type(auth) == dict):
-            print(auth)
             session['auth_token'] = auth.get('access_token')
             session['refresh_token'] = auth.get('refresh_token')
             session['token_type'] = auth.get('token_type')

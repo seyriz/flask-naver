@@ -26,9 +26,6 @@ class flask_naver(object):
         self.CLIENT_ID = app.config.get('CLIENT_ID')
         self.CLIENT_SECRET = app.config.get('CLIENT_SECRET')
         self.CALLBACK = app.config.get('CALLBACK')
-        print(self.CLIENT_ID)
-        print(self.CLIENT_SECRET)
-        print(self.CALLBACK)
         if(self.CLIENT_ID == None or self.CLIENT_SECRET == None or self.CALLBACK == None):
             raise KeyError
 
@@ -38,13 +35,12 @@ class flask_naver(object):
         MUST redirect to returned URL
         :return: Naver auth URL with query
         """
-        if(session['state'] is None):
+        if(session.get('state') is None):
             session['state'] = state = uuid4().hex
         else:
             state = session['state']
         param = {'state': state, 'redirect_uri': self.CALLBACK, 'response_type': 'code', 'client_id': self.CLIENT_ID}
         urlen = urlencode(param)
-        print(urlen)
         uri = "https://nid.naver.com/oauth2.0/authorize?"
         return redirect(uri + urlen)
 
@@ -65,9 +61,6 @@ class flask_naver(object):
                       'state': state, 'code': auth}
             urlen = urlencode(params)
             req = urlopen(uri + urlen)
-            print(req.headers)
-            print(req.code)
-            print(type(req))
             s = req.read()
             return loads(s)
         else:
@@ -83,15 +76,11 @@ class flask_naver(object):
         :param refresh_token: refresh_token given by getAuth.
         :return: New authorization information in Dict.
         """
-        print(session)
         uri = "https://nid.naver.com/oauth2.0/token?"
         params = {'grant_type': 'refresh_token', 'client_id': self.CLIENT_ID, 'client_secret': self.CLIENT_SECRET,
                   'refresh_token': refresh_token}
         urlen = urlencode(params)
-        print(urlen)
         req = urlopen(uri+urlen)
-        print(req.headers)
-        print(req.code)
         s = req.read()
         return loads(s)
 
@@ -106,11 +95,8 @@ class flask_naver(object):
         uri = "https://apis.naver.com/nidlogin/nid/getUserProfile.xml"
         header = {'Authorization': token_type + " " + access_token}
         req = urlopen(url=uri, data=urlencode(header))
-        print(req.headers)
-        print(req.code)
         parser = XML2Dict()
         cont = parser.parse(req.read())
-        print(cont)
         return cont
 
 
@@ -124,9 +110,6 @@ class flask_naver(object):
         uri = "https://apis.naver.com/nidlogin/nid/getHashId_v2.xml?mode=userinfo"
         header = {'Authorization': token_type + " " + access_token}
         req = urlopen(url=uri, data=urlencode(header))
-        print(req.headers)
-        print(req.code)
         parser = XML2Dict()
         cont = parser.parse(req.read())
-        print(cont)
         return cont
