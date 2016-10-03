@@ -23,9 +23,9 @@ class flask_naver(object):
             self.app = None
 
     def init_app(self, app):
-        self.CLIENT_ID = app.config.get('CLIENT_ID')
-        self.CLIENT_SECRET = app.config.get('CLIENT_SECRET')
-        self.CALLBACK = app.config.get('CALLBACK')
+        self.CLIENT_ID = app.config.get('NAVER_CLIENT_ID')
+        self.CLIENT_SECRET = app.config.get('NAVER_CLIENT_SECRET')
+        self.CALLBACK = app.config.get('NAVER_CALLBACK')
         if(self.CLIENT_ID == None or self.CLIENT_SECRET == None or self.CALLBACK == None):
             raise KeyError
 
