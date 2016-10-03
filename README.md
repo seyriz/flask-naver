@@ -10,9 +10,9 @@
 
 먼저 앱의 설정에 다음과 같은 값이 들어있어야 합니다.
 
-    app.config['CLIENT_ID'] = ""
-    app.config['CLIENT_SECRET'] = ""
-    app.config['CALLBACK'] = ''
+    app.config['NAVER_CLIENT_ID'] = ""
+    app.config['NAVER_CLIENT_SECRET'] = ""
+    app.config['NAVER_CALLBACK'] = ''
     
 CLIENT_ID와 CLIENT_SECRET은 [네이버 개발자센터](https://developers.naver.com/main)에서 발급받아서 입력합니다.
 
